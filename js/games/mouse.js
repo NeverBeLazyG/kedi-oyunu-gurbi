@@ -3,14 +3,14 @@
 const SPEED_MULT = { slow: 0.72, normal: 1.0, fast: 1.4 };
 
 const STANDARD_MICE = [
-  { fur: '#f4eee1', shade: '#d4cab5', ear: '#ffb5c2', tail: '#f0b8c0', nose: '#ff8da1' },
-  { fur: '#ffe082', shade: '#e6b84c', ear: '#ffbac6', tail: '#f2b8a2', nose: '#ff8598' },
-  { fur: '#dfe9f3', shade: '#b5c7d9', ear: '#ffb8c8', tail: '#e8b6c2', nose: '#ff8fa3' },
+  { fur: '#262a34', shade: '#101218', ear: '#6b4754', tail: '#3f353d', nose: '#d86c82', whisker: 'rgba(20, 24, 32, 0.72)' },
+  { fur: '#362820', shade: '#1a120e', ear: '#784e54', tail: '#523e38', nose: '#d97284', whisker: 'rgba(28, 20, 16, 0.72)' },
+  { fur: '#1f2836', shade: '#0e141f', ear: '#5f4d66', tail: '#333d4f', nose: '#cf6c86', whisker: 'rgba(18, 24, 36, 0.72)' },
 ];
 
 const CAT_MICE = [
-  { fur: '#fff24d', shade: '#d9c61c', ear: '#ffffff', tail: '#fff799', nose: '#00eaff' },
-  { fur: '#7af5ff', shade: '#28c7d9', ear: '#ffffff', tail: '#c4fbff', nose: '#fff24d' },
+  { fur: '#10182b', shade: '#060a14', ear: '#2b4475', tail: '#1e2c4a', nose: '#2d7ff9', whisker: 'rgba(10, 18, 36, 0.78)' },
+  { fur: '#1e1c12', shade: '#0d0c08', ear: '#594e1c', tail: '#332e18', nose: '#c9a400', whisker: 'rgba(18, 16, 10, 0.78)' },
 ];
 
 function clamp(v, min, max) {
@@ -25,7 +25,7 @@ function normalizeAngle(a) {
 
 class MousePrey {
   constructor(width, height, catVision, spawnFromEdge = true) {
-    this.scale = clamp(Math.min(width, height) / 760, 0.74, 1.24);
+    this.scale = clamp(Math.min(width, height) / 760, 0.78, 1.28) * 1.48;
     this.bodyLen = 46 * this.scale;
     this.bodyRad = 21 * this.scale;
     this.palette = this._pickPalette(catVision);
@@ -248,7 +248,7 @@ class MousePrey {
     // Soft ground shadow
     ctx.beginPath();
     ctx.ellipse(-2 * s, 6 * s, 28 * s, 18 * s, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.34)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
     ctx.fill();
 
     // Scurrying little paws
@@ -298,8 +298,8 @@ class MousePrey {
 
     // Whiskers
     const wTwitch = Math.sin(this.twitchPhase * 1.2) * 2.2 * s;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
-    ctx.lineWidth = 1.2 * s;
+    ctx.strokeStyle = p.whisker || 'rgba(20, 24, 32, 0.72)';
+    ctx.lineWidth = 1.3 * s;
     for (const side of [-1, 1]) {
       for (let k = -1; k <= 1; k++) {
         ctx.beginPath();
@@ -309,14 +309,14 @@ class MousePrey {
       }
     }
 
-    // Glossy eyes
+    // Glossy eyes (with bright catchlight so they shine on dark fur)
     for (const side of [-1, 1]) {
       ctx.beginPath();
-      ctx.arc(16.5 * s, side * 5.8 * s, 2.7 * s, 0, Math.PI * 2);
-      ctx.fillStyle = '#14161f';
+      ctx.arc(16.5 * s, side * 5.8 * s, 2.9 * s, 0, Math.PI * 2);
+      ctx.fillStyle = '#07080d';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(17.4 * s, side * 5.2 * s, 0.95 * s, 0, Math.PI * 2);
+      ctx.arc(17.5 * s, side * 5.2 * s, 1.25 * s, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
     }
@@ -472,22 +472,22 @@ export class MouseGame {
     const h = this.height;
     const catVision = this.settings.vision === 'cat';
 
-    // Cozy high-contrast twilight felt mat floor
+    // Bright high-contrast floor so dark mice pop vividly
     const bg = ctx.createRadialGradient(w * 0.5, h * 0.5, 20, w * 0.5, h * 0.5, Math.max(w, h) * 0.72);
     if (catVision) {
-      bg.addColorStop(0, '#162445');
-      bg.addColorStop(1, '#080e1d');
+      bg.addColorStop(0, '#f4f9ff');
+      bg.addColorStop(1, '#d6e5f8');
     } else {
-      bg.addColorStop(0, '#2a303f');
-      bg.addColorStop(1, '#161a24');
+      bg.addColorStop(0, '#fbf9f4');
+      bg.addColorStop(1, '#e4e0d5');
     }
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
 
     // Subtle mouse-hole edge markers so it feels like a real play arena
     ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.36)';
-    const holeR = Math.min(w, h) * 0.055;
+    ctx.fillStyle = 'rgba(28, 30, 36, 0.22)';
+    const holeR = Math.min(w, h) * 0.062;
     const holes = [
       { x: 0, y: h * 0.32 },
       { x: w, y: h * 0.68 },
@@ -504,11 +504,11 @@ export class MouseGame {
     // Soft paw tap rings
     for (const pw of this.paws) {
       const prog = 1 - pw.life / pw.maxLife;
-      const a = (1 - prog) * (pw.hit ? 0.55 : 0.3);
+      const a = (1 - prog) * (pw.hit ? 0.65 : 0.28);
       ctx.beginPath();
-      ctx.arc(pw.x, pw.y, 14 + prog * (pw.hit ? 64 : 38), 0, Math.PI * 2);
-      ctx.strokeStyle = pw.hit ? `rgba(255, 224, 102, ${a})` : `rgba(255, 255, 255, ${a})`;
-      ctx.lineWidth = pw.hit ? 3.5 : 2;
+      ctx.arc(pw.x, pw.y, 14 + prog * (pw.hit ? 76 : 42), 0, Math.PI * 2);
+      ctx.strokeStyle = pw.hit ? `rgba(232, 138, 0, ${a})` : `rgba(30, 36, 48, ${a})`;
+      ctx.lineWidth = pw.hit ? 4 : 2.2;
       ctx.stroke();
     }
 
@@ -524,9 +524,9 @@ export class MouseGame {
       ctx.globalAlpha = a;
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
+      ctx.fillStyle = p.star ? '#f59e0b' : p.color;
       if (p.star) {
-        drawStar(ctx, 0, 0, 5, p.r * 1.5, p.r * 0.65);
+        drawStar(ctx, 0, 0, 5, p.r * 1.6, p.r * 0.7);
         ctx.fill();
       } else {
         ctx.beginPath();
@@ -539,10 +539,13 @@ export class MouseGame {
     for (const fl of this.floats) {
       const a = clamp(fl.life / fl.maxLife, 0, 1);
       ctx.save();
-      ctx.globalAlpha = a * 0.9;
-      ctx.font = '700 26px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.globalAlpha = a * 0.95;
+      ctx.font = '800 28px -apple-system, BlinkMacSystemFont, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffe588';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.strokeText(fl.text, fl.x, fl.y);
+      ctx.fillStyle = '#d97706';
       ctx.fillText(fl.text, fl.x, fl.y);
       ctx.restore();
     }
@@ -565,54 +568,66 @@ function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
 
 export function drawMousePreview(ctx, w, h, t) {
   const bg = ctx.createRadialGradient(w * 0.5, h * 0.5, 10, w * 0.5, h * 0.5, w * 0.65);
-  bg.addColorStop(0, '#2c3344');
-  bg.addColorStop(1, '#141822');
+  bg.addColorStop(0, '#fbf9f4');
+  bg.addColorStop(1, '#e1ddd2');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  const mx = w * 0.54 + Math.sin(t * 1.4) * 38;
-  const my = h * 0.54 + Math.cos(t * 2.1) * 14;
-  const ang = Math.atan2(-Math.sin(t * 2.1) * 14, Math.cos(t * 1.4) * 38) * 0.35;
+  const mx = w * 0.56 + Math.sin(t * 1.4) * 34;
+  const my = h * 0.54 + Math.cos(t * 2.1) * 12;
+  const ang = Math.atan2(-Math.sin(t * 2.1) * 12, Math.cos(t * 1.4) * 34) * 0.35;
 
   ctx.save();
   ctx.translate(mx, my);
   ctx.rotate(ang);
+  ctx.scale(1.32, 1.32);
 
-  // Curvy wiggly tail
+  // Soft floor shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+  ctx.beginPath();
+  ctx.ellipse(-2, 5, 23, 13, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Curvy wiggly dark tail
   const wag = Math.sin(t * 8) * 10;
   ctx.beginPath();
   ctx.moveTo(-20, 0);
   ctx.bezierCurveTo(-40, -14 + wag, -56, 16 - wag, -74, wag * 0.6);
-  ctx.strokeStyle = '#f0b8c0';
-  ctx.lineWidth = 3.5;
+  ctx.strokeStyle = '#3f353d';
+  ctx.lineWidth = 3.6;
   ctx.lineCap = 'round';
   ctx.stroke();
 
-  // Body
-  ctx.fillStyle = '#f4eee1';
+  // Dark body
+  ctx.fillStyle = '#242832';
   ctx.beginPath();
   ctx.ellipse(0, 0, 22, 13, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Ears
+  // Dark ears
   for (const side of [-1, 1]) {
-    ctx.fillStyle = '#f4eee1';
+    ctx.fillStyle = '#242832';
     ctx.beginPath();
     ctx.arc(8, side * 11, 6.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#ffb5c2';
+    ctx.fillStyle = '#6b4754';
     ctx.beginPath();
     ctx.arc(8.5, side * 11, 3.8, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // Nose & eyes
-  ctx.fillStyle = '#181a24';
+  // Eyes with catchlight & nose
+  ctx.fillStyle = '#07080d';
   ctx.beginPath();
-  ctx.arc(14, -4.5, 2.2, 0, Math.PI * 2);
-  ctx.arc(14, 4.5, 2.2, 0, Math.PI * 2);
+  ctx.arc(14, -4.5, 2.3, 0, Math.PI * 2);
+  ctx.arc(14, 4.5, 2.3, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#ff8da1';
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(14.8, -5, 0.9, 0, Math.PI * 2);
+  ctx.arc(14.8, 4, 0.9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#d86c82';
   ctx.beginPath();
   ctx.arc(22, 0, 3, 0, Math.PI * 2);
   ctx.fill();

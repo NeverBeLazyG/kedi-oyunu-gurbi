@@ -164,8 +164,11 @@ function startGame(gameId) {
     },
   });
 
+  const isLightBg = gameId === 'mouse';
   menuOverlay.classList.add('hidden');
+  hud.classList.toggle('hud-light', isLightBg);
   hud.classList.remove('hidden');
+  exitHoldBtn.classList.toggle('btn-light', isLightBg);
   exitHoldBtn.classList.remove('hidden');
   resetHoldState();
   requestWakeLock();

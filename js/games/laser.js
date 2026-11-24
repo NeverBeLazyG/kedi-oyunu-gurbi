@@ -3,14 +3,14 @@
 const SPEED_MULT = { slow: 0.72, normal: 1.0, fast: 1.42 };
 
 const STANDARD_LASERS = [
-  { core: '#ffffff', main: '#ff2442', glow: 'rgba(255, 36, 66, 0.55)', trail: 'rgba(255, 65, 92, 0.45)' },
-  { core: '#ffffff', main: '#00f2ff', glow: 'rgba(0, 242, 255, 0.55)', trail: 'rgba(65, 246, 255, 0.45)' },
-  { core: '#ffffff', main: '#c8ff00', glow: 'rgba(200, 255, 0, 0.55)', trail: 'rgba(215, 255, 70, 0.45)' },
+  { core: '#ffffff', main: '#ff1a3c', glow: 'rgba(255, 24, 60, 0.82)', trail: 'rgba(255, 45, 78, 0.62)' },
+  { core: '#ffffff', main: '#00f6ff', glow: 'rgba(0, 246, 255, 0.82)', trail: 'rgba(40, 248, 255, 0.62)' },
+  { core: '#ffffff', main: '#d4ff00', glow: 'rgba(212, 255, 0, 0.82)', trail: 'rgba(220, 255, 50, 0.62)' },
 ];
 
 const CAT_LASERS = [
-  { core: '#ffffff', main: '#00f2ff', glow: 'rgba(0, 242, 255, 0.65)', trail: 'rgba(60, 246, 255, 0.5)' },
-  { core: '#ffffff', main: '#ffee00', glow: 'rgba(255, 238, 0, 0.65)', trail: 'rgba(255, 244, 90, 0.5)' },
+  { core: '#ffffff', main: '#00f6ff', glow: 'rgba(0, 246, 255, 0.88)', trail: 'rgba(45, 248, 255, 0.68)' },
+  { core: '#ffffff', main: '#fff000', glow: 'rgba(255, 240, 0, 0.88)', trail: 'rgba(255, 245, 70, 0.68)' },
 ];
 
 function clamp(v, min, max) {
@@ -172,8 +172,9 @@ class LaserDot {
     const p = this.palette;
 
     // Motion-blur neon light ribbon trail
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
     if (this.trail.length > 2) {
-      ctx.save();
       ctx.lineCap = 'round';
       for (let i = 1; i < this.trail.length; i++) {
         const ratio = i / this.trail.length;
@@ -181,23 +182,36 @@ class LaserDot {
         ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
         ctx.lineTo(this.trail[i].x, this.trail[i].y);
         ctx.strokeStyle = p.trail;
-        ctx.globalAlpha = ratio * 0.65;
-        ctx.lineWidth = (3 + ratio * 12) * s;
+        ctx.globalAlpha = ratio * 0.78;
+        ctx.lineWidth = (3.5 + ratio * 13.5) * s;
         ctx.stroke();
       }
-      ctx.restore();
     }
 
-    // Outer optical bloom
-    const outerR = 46 * s;
+    // Wide intense optical bloom on pitch-black background
+    ctx.globalAlpha = 1;
+    const outerR = 68 * s;
     const halo = ctx.createRadialGradient(this.renderX, this.renderY, 2 * s, this.renderX, this.renderY, outerR);
     halo.addColorStop(0, p.glow);
-    halo.addColorStop(0.35, p.trail);
+    halo.addColorStop(0.28, p.trail);
+    halo.addColorStop(0.62, 'rgba(0,0,0,0.08)');
     halo.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = halo;
     ctx.beginPath();
     ctx.arc(this.renderX, this.renderY, outerR, 0, Math.PI * 2);
     ctx.fill();
+
+    // Inner blazing halo
+    const innerR = 26 * s;
+    const innerHalo = ctx.createRadialGradient(this.renderX, this.renderY, 2 * s, this.renderX, this.renderY, innerR);
+    innerHalo.addColorStop(0, '#ffffff');
+    innerHalo.addColorStop(0.45, p.main);
+    innerHalo.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = innerHalo;
+    ctx.beginPath();
+    ctx.arc(this.renderX, this.renderY, innerR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     // Saturated laser core
     ctx.fillStyle = p.main;
@@ -208,7 +222,7 @@ class LaserDot {
     // Blazing white-hot pinpoint center
     ctx.fillStyle = p.core;
     ctx.beginPath();
-    ctx.arc(this.renderX, this.renderY, 7.2 * s, 0, Math.PI * 2);
+    ctx.arc(this.renderX, this.renderY, 8 * s, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -348,23 +362,12 @@ export class LaserGame {
     const w = this.width;
     const h = this.height;
 
-    // Deep obsidian floor for maximum contrast
+    // Pitch-black floor so the glowing laser pops with maximum luminance
     const bg = ctx.createRadialGradient(w * 0.5, h * 0.5, 10, w * 0.5, h * 0.5, Math.max(w, h) * 0.72);
-    bg.addColorStop(0, '#131926');
-    bg.addColorStop(1, '#070a10');
+    bg.addColorStop(0, '#040508');
+    bg.addColorStop(1, '#000000');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
-
-    // Subtle concentric arena rings for depth
-    ctx.save();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-    ctx.lineWidth = 1.5;
-    for (let r = 120; r < Math.max(w, h) * 0.6; r += 130) {
-      ctx.beginPath();
-      ctx.arc(w * 0.5, h * 0.5, r, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
 
     for (const rg of this.rings) {
       const a = clamp(rg.life / rg.maxLife, 0, 1);
@@ -415,8 +418,8 @@ export class LaserGame {
 
 export function drawLaserPreview(ctx, w, h, t) {
   const bg = ctx.createRadialGradient(w * 0.5, h * 0.5, 8, w * 0.5, h * 0.5, w * 0.65);
-  bg.addColorStop(0, '#141b2a');
-  bg.addColorStop(1, '#07090f');
+  bg.addColorStop(0, '#05060a');
+  bg.addColorStop(1, '#000000');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
@@ -431,34 +434,36 @@ export function drawLaserPreview(ctx, w, h, t) {
   }
 
   ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
   ctx.lineCap = 'round';
   for (let i = 1; i < pts.length; i++) {
     const r = i / pts.length;
     ctx.beginPath();
     ctx.moveTo(pts[i - 1].x, pts[i - 1].y);
     ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.strokeStyle = `rgba(255, 45, 76, ${r * 0.55})`;
-    ctx.lineWidth = 2 + r * 8;
+    ctx.strokeStyle = `rgba(255, 32, 68, ${r * 0.72})`;
+    ctx.lineWidth = 2.5 + r * 9;
     ctx.stroke();
   }
-  ctx.restore();
 
   const head = pts[pts.length - 1];
-  const halo = ctx.createRadialGradient(head.x, head.y, 2, head.x, head.y, 34);
-  halo.addColorStop(0, 'rgba(255, 36, 66, 0.7)');
-  halo.addColorStop(1, 'rgba(255, 36, 66, 0)');
+  const halo = ctx.createRadialGradient(head.x, head.y, 2, head.x, head.y, 46);
+  halo.addColorStop(0, 'rgba(255, 24, 60, 0.92)');
+  halo.addColorStop(0.4, 'rgba(255, 24, 60, 0.38)');
+  halo.addColorStop(1, 'rgba(255, 24, 60, 0)');
   ctx.fillStyle = halo;
   ctx.beginPath();
-  ctx.arc(head.x, head.y, 34, 0, Math.PI * 2);
+  ctx.arc(head.x, head.y, 46, 0, Math.PI * 2);
   ctx.fill();
+  ctx.restore();
 
-  ctx.fillStyle = '#ff2442';
+  ctx.fillStyle = '#ff1a3c';
   ctx.beginPath();
-  ctx.arc(head.x, head.y, 9.5, 0, Math.PI * 2);
+  ctx.arc(head.x, head.y, 10, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = '#ffffff';
   ctx.beginPath();
-  ctx.arc(head.x, head.y, 5, 0, Math.PI * 2);
+  ctx.arc(head.x, head.y, 5.5, 0, Math.PI * 2);
   ctx.fill();
 }
