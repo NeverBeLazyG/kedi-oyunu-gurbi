@@ -9,6 +9,16 @@ Vier interaktive Fangspiele speziell für Katzen auf dem iPad – direkt im Brow
 3. **Käfer-Wiese (Käfer & Falter fangen)** – Krabbelnde Leuchtkäfer und flatternde Falter mit hektischen Bewegungen und sanftem Summen.
 4. **Laser-Jagd (Laserpunkt)** – Realistisch zuckender Leuchtpunkt mit Lichtspur, der beim Fangen in funkelnde Partikel platzt (für echte Fang-Belohnung!).
 
+## 🔊 Hunde- & Katzengeräusche (Soundboard)
+
+Direkt im Hauptmenü gibt es einen zweiten Tab **„Hunde- & Katzengeräusche“** mit 14 echten, normalisierten MP3-Aufnahmen (iPad-Safari-kompatibel):
+
+- **8 Katzen-Sounds:** Junges Miau, Siam-Miau, Klares Miau, Bitte-Miau, Ungeduldiges Miau, Gurren, Schnurren, Fauchen
+- **6 Hunde-Sounds:** Kurzes Wuff, Doppel-Wuff, Bellen, Bell-Serie, Großer Hund (Rottweiler), Heulen
+- **Zufalls-Buttons** (Zufalls-Miau & Zufalls-Wuff) und Stopp-Button
+
+*Audio-Quellen:* Wikimedia Commons (CC0 / Public Domain / CC BY 4.0 / CC BY-SA 3.0 & 4.0, inkl. Gravity Sound).
+
 ## 🐱 Optimiert für Katzen & iPad
 
 - **Multi-Touch für beide Pfoten** & großzügige Trefferzonen

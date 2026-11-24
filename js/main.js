@@ -1,4 +1,5 @@
 import { audio } from './audio.js';
+import { soundboard } from './soundboard.js';
 import { FishGame, drawFishPreview } from './games/fish.js';
 import { MouseGame, drawMousePreview } from './games/mouse.js';
 import { BugGame, drawBugPreview } from './games/bug.js';
@@ -63,8 +64,12 @@ const hudTime = document.getElementById('hudTime');
 const exitHoldBtn = document.getElementById('exitHoldBtn');
 const holdRingProgress = document.getElementById('holdRingProgress');
 const callCatBtn = document.getElementById('callCatBtn');
+const gamesView = document.getElementById('gamesView');
+const soundsView = document.getElementById('soundsView');
+const menuTabs = document.querySelectorAll('.menu-tab');
 
 // App State
+let activeTab = 'games';
 let activeGameId = null;
 let activeGame = null;
 let score = 0;
@@ -139,6 +144,7 @@ function startGame(gameId) {
   const entry = GAMES[gameId];
   if (!entry) return;
 
+  soundboard.stop();
   audio.unlock();
   activeGameId = gameId;
   score = 0;
@@ -308,8 +314,40 @@ document.querySelectorAll('.segmented').forEach((group) => {
 });
 
 callCatBtn.addEventListener('click', () => {
+  soundboard.stop();
   audio.unlock();
   audio.playCatCall();
+});
+
+// ==================== MENU TABS & SOUNDBOARD ====================
+function switchMenuTab(tabId) {
+  activeTab = tabId;
+  if (tabId !== 'sounds') {
+    soundboard.stop();
+  }
+  gamesView.classList.toggle('hidden', tabId !== 'games');
+  soundsView.classList.toggle('hidden', tabId !== 'sounds');
+  menuTabs.forEach((btn) => {
+    const isActive = btn.getAttribute('data-tab') === tabId;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+  });
+}
+
+menuTabs.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    audio.unlock();
+    switchMenuTab(btn.getAttribute('data-tab'));
+  });
+});
+
+soundboard.init({
+  catGrid: document.getElementById('catSoundsGrid'),
+  dogGrid: document.getElementById('dogSoundsGrid'),
+  stopBtn: document.getElementById('stopSoundBtn'),
+  randomCatBtn: document.getElementById('randomCatBtn'),
+  randomDogBtn: document.getElementById('randomDogBtn'),
+  audioEngine: audio,
 });
 
 // ==================== LIVE MENU CARD PREVIEWS ====================
@@ -350,7 +388,7 @@ function tick(now) {
 
     activeGame.update(dt);
     activeGame.draw(ctx);
-  } else {
+  } else if (activeTab === 'games') {
     renderMenuPreviews(now / 1000);
   }
 

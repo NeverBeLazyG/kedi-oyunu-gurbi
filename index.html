@@ -56,7 +56,7 @@
           <div class="brand-badge" aria-hidden="true">🐾</div>
           <div>
             <h1>Gurbis Jagd</h1>
-            <p class="subtitle">Tippe auf ein Spiel &amp; leg das iPad flach hin</p>
+            <p class="subtitle">Spiele &amp; echte Tiergeräusche für dein iPad</p>
           </div>
         </div>
         <button id="callCatBtn" class="call-cat-btn" type="button" title="Lockton abspielen">
@@ -64,6 +64,18 @@
         </button>
       </header>
 
+      <!-- Main Menu Navigation Tabs -->
+      <nav class="menu-tabs" role="tablist" aria-label="Hauptmenü">
+        <button id="tabGames" class="menu-tab active" type="button" role="tab" aria-selected="true" data-tab="games">
+          <span>🎮</span> Fangspiele
+        </button>
+        <button id="tabSounds" class="menu-tab" type="button" role="tab" aria-selected="false" data-tab="sounds">
+          <span>🔊</span> Hunde- &amp; Katzengeräusche
+        </button>
+      </nav>
+
+      <!-- VIEW 1: Catch Games -->
+      <div id="gamesView" class="menu-view">
       <!-- 4 Catch Games Grid -->
       <section class="games-grid" aria-label="Spieleauswahl">
         <button class="game-card card-fish" data-game="fish" type="button">
@@ -159,6 +171,39 @@
           </ul>
         </details>
       </footer>
+      </div>
+
+      <!-- VIEW 2: Dog & Cat Soundboard -->
+      <section id="soundsView" class="menu-view hidden" aria-label="Hunde- und Katzengeräusche">
+        <div class="soundboard-toolbar">
+          <p class="soundboard-intro">Echte Aufnahmen zum Antippen – nochmal tippen zum Stoppen.</p>
+          <div class="soundboard-actions">
+            <button id="randomCatBtn" class="sb-action-btn sb-action-cat" type="button">🎲 Zufalls-Miau</button>
+            <button id="randomDogBtn" class="sb-action-btn sb-action-dog" type="button">🎲 Zufalls-Wuff</button>
+            <button id="stopSoundBtn" class="sb-action-btn sb-action-stop" type="button" disabled>⏹ Stopp</button>
+          </div>
+        </div>
+
+        <div class="sound-section">
+          <div class="sound-section-head">
+            <h2>🐱 Katzen-Geräusche</h2>
+            <span class="sound-badge">8 echte Sounds</span>
+          </div>
+          <div id="catSoundsGrid" class="sound-grid"></div>
+        </div>
+
+        <div class="sound-section">
+          <div class="sound-section-head">
+            <h2>🐶 Hunde-Geräusche</h2>
+            <span class="sound-badge sound-badge-dog">6 echte Sounds</span>
+          </div>
+          <div id="dogSoundsGrid" class="sound-grid"></div>
+        </div>
+
+        <p class="sound-credits">
+          Audio-Aufnahmen: Wikimedia Commons (CC0 / Public Domain / CC BY / CC BY-SA, inkl. Gravity Sound).
+        </p>
+      </section>
     </div>
   </div>
 
