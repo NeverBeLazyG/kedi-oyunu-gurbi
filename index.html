@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gurbis Jagd">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0b1e3f">
+  <title>Gurbis Jagd – Spiele für Katzen</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fullscreen Game Canvas -->
+  <canvas id="gameCanvas" aria-label="Spielfläche für Katzen"></canvas>
+
+  <!-- Minimal In-Game HUD (non-interactive so paws never trigger UI) -->
+  <div id="hud" class="hud hidden" aria-hidden="true">
+    <div class="hud-left">
+      <div class="hud-stat">
+        <span class="hud-label">Punkte</span>
+        <span id="hudScore" class="hud-value">0</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-label">Rekord</span>
+        <span id="hudBest" class="hud-value">0</span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-stat hud-stat-right">
+        <span class="hud-label">Zeit</span>
+        <span id="hudTime" class="hud-value">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cat-Proof Hold-to-Exit Button (requires 1.4s continuous hold) -->
+  <button id="exitHoldBtn" class="exit-hold-btn hidden" type="button" aria-label="1,5 Sekunden gedrückt halten für Menü">
+    <svg class="hold-ring" viewBox="0 0 44 44">
+      <circle class="hold-ring-bg" cx="22" cy="22" r="19" />
+      <circle id="holdRingProgress" class="hold-ring-progress" cx="22" cy="22" r="19" />
+    </svg>
+    <span class="hold-icon">☰</span>
+    <span class="hold-hint">Halten</span>
+  </button>
+
+  <!-- Human Menu Overlay -->
+  <div id="menuOverlay" class="menu-overlay">
+    <div class="menu-container">
+      <header class="menu-header">
+        <div class="brand">
+          <div class="brand-badge" aria-hidden="true">🐾</div>
+          <div>
+            <h1>Gurbis Jagd</h1>
+            <p class="subtitle">Tippe auf ein Spiel &amp; leg das iPad flach hin</p>
+          </div>
+        </div>
+        <button id="callCatBtn" class="call-cat-btn" type="button" title="Lockton abspielen">
+          <span>🔔</span> Katze locken
+        </button>
+      </header>
+
+      <!-- 4 Catch Games Grid -->
+      <section class="games-grid" aria-label="Spieleauswahl">
+        <button class="game-card card-fish" data-game="fish" type="button">
+          <div class="card-preview">
+            <canvas class="preview-canvas" data-preview="fish" width="320" height="170"></canvas>
+            <span class="card-highscore" data-best="fish">Rekord: 0</span>
+          </div>
+          <div class="card-body">
+            <h2>Koi-Teich</h2>
+            <p>Schwimmende Fische &amp; echte Wasserwellen beim Antippen</p>
+          </div>
+        </button>
+
+        <button class="game-card card-mouse" data-game="mouse" type="button">
+          <div class="card-preview">
+            <canvas class="preview-canvas" data-preview="mouse" width="320" height="170"></canvas>
+            <span class="card-highscore" data-best="mouse">Rekord: 0</span>
+          </div>
+          <div class="card-body">
+            <h2>Mäusejagd</h2>
+            <p>Flitzende Mäuse mit wackelndem Schwanz &amp; Piepsen</p>
+          </div>
+        </button>
+
+        <button class="game-card card-bug" data-game="bug" type="button">
+          <div class="card-preview">
+            <canvas class="preview-canvas" data-preview="bug" width="320" height="170"></canvas>
+            <span class="card-highscore" data-best="bug">Rekord: 0</span>
+          </div>
+          <div class="card-body">
+            <h2>Käfer-Wiese</h2>
+            <p>Krabbelnde Leuchtkäfer &amp; flatternde Falter zum Schnappen</p>
+          </div>
+        </button>
+
+        <button class="game-card card-laser" data-game="laser" type="button">
+          <div class="card-preview">
+            <canvas class="preview-canvas" data-preview="laser" width="320" height="170"></canvas>
+            <span class="card-highscore" data-best="laser">Rekord: 0</span>
+          </div>
+          <div class="card-body">
+            <h2>Laser-Jagd</h2>
+            <p>Zuckender Leuchtpunkt, der beim Fangen in Funken platzt</p>
+          </div>
+        </button>
+      </section>
+
+      <!-- Quick Settings Bar -->
+      <section class="settings-panel" aria-label="Spieleinstellungen">
+        <div class="setting-group">
+          <span class="setting-label">Tempo</span>
+          <div class="segmented" data-setting="speed">
+            <button type="button" data-value="slow">Gemütlich</button>
+            <button type="button" data-value="normal" class="active">Normal</button>
+            <button type="button" data-value="fast">Flitzig</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <span class="setting-label">Beute</span>
+          <div class="segmented" data-setting="count">
+            <button type="button" data-value="1">1</button>
+            <button type="button" data-value="2" class="active">2</button>
+            <button type="button" data-value="3">3</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <span class="setting-label">Farben</span>
+          <div class="segmented" data-setting="vision">
+            <button type="button" data-value="standard" class="active">Klassisch</button>
+            <button type="button" data-value="cat">Katzen-Sicht</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <span class="setting-label">Ton</span>
+          <div class="segmented" data-setting="sound">
+            <button type="button" data-value="on" class="active">An</button>
+            <button type="button" data-value="off">Aus</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Helpful iPad Tip -->
+      <footer class="ipad-tip">
+        <details>
+          <summary>💡 iPad-Tipp: Vollbild &amp; Pfotenschutz aktivieren</summary>
+          <ul>
+            <li><strong>Vollbild:</strong> In Safari auf <em>Teilen → Zum Home-Bildschirm</em> tippen, dann startet das Spiel ohne Browser-Leiste.</li>
+            <li><strong>Pfotenschutz im Spiel:</strong> Zum Zurückkehren ins Menü den kleinen Button oben rechts <strong>1,5 Sekunden gedrückt halten</strong> – so drückt deine Katze ihn nicht aus Versehen.</li>
+            <li><strong>iPad-Sperre:</strong> Unter <em>Einstellungen → Bedienungshilfen → Geführter Zugriff</em> kannst du den Home-Swipe sperren (3× Seitentaste drücken).</li>
+          </ul>
+        </details>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

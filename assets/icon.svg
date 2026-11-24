@@ -1,4 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#9333ea"/>
-  <text x="32" y="32" dy="0.35em" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#ffffff">KO</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="pond" cx="50%" cy="48%" r="60%">
+      <stop offset="0%" stop-color="#2a72de"/>
+      <stop offset="100%" stop-color="#0b2863"/>
+    </radialGradient>
+    <linearGradient id="fish" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd94a"/>
+      <stop offset="100%" stop-color="#ff7a00"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#pond)"/>
+  <circle cx="88" cy="40" r="24" fill="none" stroke="rgba(195,238,255,0.42)" stroke-width="3"/>
+  <circle cx="88" cy="40" r="13" fill="none" stroke="rgba(195,238,255,0.62)" stroke-width="2.5"/>
+  <g transform="translate(56 72) rotate(-32)">
+    <ellipse cx="6" cy="8" rx="28" ry="13" fill="rgba(120,238,255,0.38)"/>
+    <path d="M-24 0 Q-38 -15 -48 -18 Q-39 0 -48 18 Q-38 15 -24 0 Z" fill="rgba(255,228,130,0.85)"/>
+    <ellipse cx="4" cy="-16" rx="11" ry="6" transform="rotate(-35 4 -16)" fill="rgba(255,228,130,0.82)"/>
+    <ellipse cx="4" cy="16" rx="11" ry="6" transform="rotate(35 4 16)" fill="rgba(255,228,130,0.82)"/>
+    <ellipse cx="0" cy="0" rx="28" ry="13.5" fill="url(#fish)"/>
+    <circle cx="16" cy="-5" r="2.4" fill="#181a24"/>
+    <circle cx="16" cy="5" r="2.4" fill="#181a24"/>
+  </g>
 </svg>
